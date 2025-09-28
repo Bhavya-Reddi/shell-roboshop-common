@@ -10,7 +10,7 @@ LOG_FILE="$LOGS_FOLDER/$SCRIPT_NAME.log" # /var/log/shell-script/16-logs.log
 START_TIME=$(date +%s)
 SCRIPT_DIR=$PWD # for absoulute path
 MONGODB_HOST=mongodb.satyabhavya.store
-
+MYSQL_HOST=mysql.satyabhavya.store
 
 mkdir -p $LOGS_FOLDER
 echo "Script started executed at: $(date)" | tee -a $LOG_FILE
@@ -21,6 +21,7 @@ check_root(){
         exit 1 # failure is other than 0
     fi
 }
+
 
 VALIDATE(){ # functions receive inputs through args just like shell script args
     if [ $1 -ne 0 ]; then
@@ -58,8 +59,8 @@ python_setup(){
     pip3 install -r requirements.txt &>>$LOG_FILE
     VALIDATE $? "Installing dependencies"
 }
-app_setup(){    
-    
+
+app_setup(){
     id roboshop &>>$LOG_FILE
     if [ $? -ne 0 ]; then
         useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop &>>$LOG_FILE
