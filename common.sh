@@ -1,4 +1,3 @@
-#!/bin/bash
 USERID=$(id -u)
 R="\e[31m"
 G="\e[32m"
@@ -10,7 +9,7 @@ SCRIPT_NAME=$( echo $0 | cut -d "." -f1 )
 LOG_FILE="$LOGS_FOLDER/$SCRIPT_NAME.log" # /var/log/shell-script/16-logs.log
 START_TIME=$(date +%s)
 MONGODB_HOST=satyabhavya.store
-MYSQL_HOST=satyabhavya.store
+
 
 
 mkdir -p $LOGS_FOLDER
@@ -58,6 +57,7 @@ app_setup(){
     unzip /tmp/c$app_name.zip &>>$LOG_FILE
     VALIDATE $? "unzip $app_name"
 }
+
 systemd_setup(){
     cp $SCRIPT_DIR/$app_name.service /etc/systemd/system/$app_name.service
     VALIDATE $? "Copy systemctl service"
