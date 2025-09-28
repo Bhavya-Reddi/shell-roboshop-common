@@ -8,17 +8,17 @@ LOGS_FOLDER="/var/log/shell-roboshop"
 SCRIPT_NAME=$( echo $0 | cut -d "." -f1 )
 LOG_FILE="$LOGS_FOLDER/$SCRIPT_NAME.log" # /var/log/shell-script/16-logs.log
 START_TIME=$(date +%s)
-MONGODB_HOST=satyabhavya.store
-
+SCRIPT_DIR=$PWD # for absoulute path
+MONGODB_HOST=mongodb.satyabhavya.store
 
 
 mkdir -p $LOGS_FOLDER
 echo "Script started executed at: $(date)" | tee -a $LOG_FILE
 
-check_root(){ 
+check_root(){
     if [ $USERID -ne 0 ]; then
-    echo "ERROR:: Please run this script with root privelege"
-    exit 1 # failure is other than 0
+        echo "ERROR:: Please run this script with root privelege"
+        exit 1 # failure is other than 0
     fi
 }
 
@@ -30,6 +30,7 @@ VALIDATE(){ # functions receive inputs through args just like shell script args
         echo -e "$2 ... $G SUCCESS $N" | tee -a $LOG_FILE
     fi
 }
+
 nodejs_setup(){
     dnf module disable nodejs -y &>>$LOG_FILE
     VALIDATE $? "Disabling NodeJS"
@@ -41,6 +42,7 @@ nodejs_setup(){
     npm install &>>$LOG_FILE
     VALIDATE $? "Install dependencies"
 }
+
 app_setup(){
     mkdir -p /app
     VALIDATE $? "Creating app directory"
@@ -54,7 +56,7 @@ app_setup(){
     rm -rf /app/*
     VALIDATE $? "Removing existing code"
 
-    unzip /tmp/c$app_name.zip &>>$LOG_FILE
+    unzip /tmp/$app_name.zip &>>$LOG_FILE
     VALIDATE $? "unzip $app_name"
 }
 
@@ -69,8 +71,8 @@ systemd_setup(){
 
 app_restart(){
     systemctl restart $app_name
-    VALIDATE $? "Restarted $app_name"   
-}    
+    VALIDATE $? "Restarted $app_name"
+}
 print_total_time(){
     END_TIME=$(date +%s)
     TOTAL_TIME=$(( $END_TIME - $START_TIME ))
