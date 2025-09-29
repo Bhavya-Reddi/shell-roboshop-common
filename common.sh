@@ -62,14 +62,12 @@ python_setup(){
 }
 
 app_setup(){
-    echo "Checking if roboshop user exists..." | tee -a $LOG_FILE
     id roboshop &>>$LOG_FILE
     if [ $? -ne 0 ]; then
-        echo "Creating roboshop user..." | tee -a $LOG_FILE
-        useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop >>$LOG_FILE 2>&1
+        useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop &>>$LOG_FILE
         VALIDATE $? "Creating system user"
     else
-        echo -e "User already exists ... $Y SKIPPING $N" | tee -a $LOG_FILE
+        echo -e "User already exist ... $Y SKIPPING $N"
     fi
 
     mkdir -p /app
