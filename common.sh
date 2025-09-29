@@ -61,26 +61,14 @@ python_setup(){
     VALIDATE $? "Installing dependencies"
 }
 
-# app_setup(){
-#     id roboshop &>>$LOG_FILE
-#     if [ $? -ne 0 ]; then
-#         useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop &>>$LOG_FILE
-#         VALIDATE $? "Creating system user"
-#     else
-#         echo -e "User already exist ... $Y SKIPPING $N"
-#     fi
-
 app_setup(){
     id roboshop &>>$LOG_FILE
     if [ $? -ne 0 ]; then
-        # echo "➡️ roboshop user not found, creating..." | tee -a $LOG_FILE
         useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop &>>$LOG_FILE
-        # echo "✅ useradd command exited with status: $?" | tee -a $LOG_FILE
         VALIDATE $? "Creating system user"
     else
-        echo -e "User already exist ... $Y SKIPPING $N" # | tee -a $LOG_FILE
+        echo -e "User already exist ... $Y SKIPPING $N"
     fi
-
     
     mkdir -p /app
     VALIDATE $? "Creating app directory"
