@@ -62,29 +62,57 @@ python_setup(){
 }
 
 app_setup(){
+    echo "Checking if roboshop user exists..." | tee -a $LOG_FILE
     id roboshop &>>$LOG_FILE
     if [ $? -ne 0 ]; then
-        useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop &>>$LOG_FILE
+        echo "Creating roboshop user..." | tee -a $LOG_FILE
+        useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop >>$LOG_FILE 2>&1
         VALIDATE $? "Creating system user"
     else
-        echo -e "User already exist ... $Y SKIPPING $N"
+        echo -e "User already exists ... $Y SKIPPING $N" | tee -a $LOG_FILE
     fi
-    
+
     mkdir -p /app
     VALIDATE $? "Creating app directory"
 
+    echo "Downloading $app_name application..." | tee -a $LOG_FILE
     curl -o /tmp/$app_name.zip https://roboshop-artifacts.s3.amazonaws.com/$app_name-v3.zip &>>$LOG_FILE
     VALIDATE $? "Downloading $app_name application"
 
-    cd /app 
+    cd /app
     VALIDATE $? "Changing to app directory"
 
     rm -rf /app/*
     VALIDATE $? "Removing existing code"
 
     unzip /tmp/$app_name.zip &>>$LOG_FILE
-    VALIDATE $? "unzip $app_name"
+    VALIDATE $? "Unzipping $app_name"
 }
+
+# app_setup(){
+#     id roboshop &>>$LOG_FILE
+#     if [ $? -ne 0 ]; then
+#         useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop &>>$LOG_FILE
+#         VALIDATE $? "Creating system user"
+#     else
+#         echo -e "User already exist ... $Y SKIPPING $N"
+#     fi
+    
+#     mkdir -p /app
+#     VALIDATE $? "Creating app directory"
+
+#     curl -o /tmp/$app_name.zip https://roboshop-artifacts.s3.amazonaws.com/$app_name-v3.zip &>>$LOG_FILE
+#     VALIDATE $? "Downloading $app_name application"
+
+#     cd /app 
+#     VALIDATE $? "Changing to app directory"
+
+#     rm -rf /app/*
+#     VALIDATE $? "Removing existing code"
+
+#     unzip /tmp/$app_name.zip &>>$LOG_FILE
+#     VALIDATE $? "unzip $app_name"
+# }
 
 systemd_setup(){
     cp $SCRIPT_DIR/$app_name.service /etc/systemd/system/$app_name.service
